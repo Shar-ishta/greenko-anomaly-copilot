@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Renewable Asset Fault & Anomaly Detection Copilot</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#f2f6f3;--card:#fff;--bd:#e1e8e3;--tx:#13231b;--mut:#62736a;--accent:#1b7f5a;--soft:#eef6f1;--hi:#d92d20;--md:#f79009;--lo:#b59a00;--ok:#12b76a;--ln:#0f4d36;--ex:#7b8b83;--grid:#e7eee9;--shadow:0 8px 24px rgba(16,40,28,.07);--code:#0f1c16}
+[data-theme=dark]{--bg:#0b1410;--card:#12201a;--bd:#223529;--tx:#e6f0ea;--mut:#8ea397;--accent:#34d399;--soft:#183026;--ln:#6ee7b7;--ex:#7d8f85;--grid:#1c2e24;--shadow:0 8px 24px rgba(0,0,0,.4);--code:#09110d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;transition:background .25s}
+header{background:linear-gradient(120deg,#0b3d2b,#1b7f5a 62%,#2fae7c);color:#fff;padding:26px 32px 56px;position:relative;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;max-width:1120px;margin:0 auto}
+header h1{margin:0 0 6px;font-size:26px;letter-spacing:-.01em}header p{margin:0;opacity:.88;font-size:14px;max-width:640px}
+.tools{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);padding:5px 12px;border-radius:99px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#fbbf24}.dot.on{background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3)}.dot.off{background:#f87171}
+.ic{background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:99px;width:34px;height:34px;cursor:pointer;font-size:16px}
+main{max-width:1120px;margin:-34px auto 0;padding:0 20px 30px;position:relative}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 4px;font-size:18px}.sub{color:var(--mut);font-size:13px;margin:0 0 14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{border-radius:12px;padding:14px 16px;background:var(--soft);border:1px solid var(--bd);border-left:4px solid var(--accent)}
+.kpi.red{border-left-color:var(--hi)}.kpi.amb{border-left-color:var(--md)}
+.kpi b{display:block;font-size:24px;letter-spacing:-.02em;white-space:nowrap}.kpi span{font-size:12px;color:var(--mut)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:14px}
+.seg{display:inline-flex;background:var(--soft);border:1px solid var(--bd);border-radius:12px;padding:4px;gap:4px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--tx);padding:8px 14px;border-radius:9px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.seg button.on{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(27,127,90,.35)}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.chart{margin-bottom:6px}.ch-h{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin:6px 2px 0}
+.leg{font-weight:400;color:var(--mut);font-size:12px}
+svg.ch{width:100%;height:auto;display:block;cursor:crosshair}
+.gl{stroke:var(--grid);stroke-width:1}.tk{fill:var(--mut);font-size:10px}
+.ln{fill:none;stroke:var(--ln);stroke-width:1.8;stroke-linejoin:round}.ex{fill:none;stroke:var(--ex);stroke-width:1.3;stroke-dasharray:5 4}
+.ar{fill:url(#g)}.band{fill:var(--hi);opacity:.12}.xh{stroke:var(--mut);stroke-width:1;stroke-dasharray:3 3;opacity:0}
+.an{fill:var(--hi);stroke:#fff;stroke-width:1.5}.pulse{fill:var(--hi);opacity:.35;transform-box:fill-box;transform-origin:center;animation:p 1.6s ease-out infinite}
+@keyframes p{0%{transform:scale(.6);opacity:.5}100%{transform:scale(2.4);opacity:0}}
+#tip{position:fixed;pointer-events:none;background:var(--code);color:#e6f0ea;font-size:12px;padding:8px 10px;border-radius:8px;opacity:0;transition:opacity .1s;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.3);max-width:240px}
+.ev{border:1px solid var(--bd);border-left:6px solid var(--lo);border-radius:12px;padding:16px;margin:12px 0;background:var(--card)}
+.ev.high{border-left-color:var(--hi)}.ev.medium{border-left-color:var(--md)}
+.ev-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.badge{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;color:#fff;background:var(--lo);letter-spacing:.04em}
+.badge.high{background:var(--hi)}.badge.medium{background:var(--md)}
+.chip{display:inline-block;background:var(--soft);border:1px solid var(--bd);padding:3px 10px;border-radius:99px;font-size:12px;margin:2px 4px 2px 0}
+.chip.w{background:rgba(247,144,9,.12);border-color:rgba(247,144,9,.4)}
+.score{flex:1;min-width:120px;max-width:200px;margin-left:auto}.score i{display:block;height:6px;border-radius:9px;background:var(--grid);overflow:hidden}.score u{display:block;height:100%;background:linear-gradient(90deg,var(--md),var(--hi));border-radius:9px}.score small{font-size:11px;color:var(--mut)}
+.sum{margin:6px 0 10px}details{border-top:1px solid var(--bd);padding:8px 0}summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--accent)}
+details ul{margin:8px 0 2px;padding-left:20px}details li{margin:3px 0}
+.safety{background:rgba(247,144,9,.12);border:1px solid rgba(247,144,9,.35);border-radius:10px;padding:8px 12px;font-size:13px;margin-top:8px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--mut)}
+.chat{max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;padding:2px}
+.empty{color:var(--mut);font-size:13px;text-align:center;padding:18px;border:1px dashed var(--bd);border-radius:12px}
+.m{max-width:88%;padding:10px 14px;border-radius:14px;font-size:14px;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.m.b{align-self:flex-start;background:var(--soft);border:1px solid var(--bd);border-bottom-left-radius:4px}
+.m small{display:block;color:var(--mut);margin-top:8px;font-size:12px}.m details{white-space:normal}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row input[type=text]{flex:1;min-width:220px;padding:11px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit}
+.row input:focus{outline:2px solid var(--accent);border-color:transparent}
+.sug{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.sug button{background:var(--soft);border:1px solid var(--bd);color:var(--tx);padding:6px 12px;border-radius:99px;cursor:pointer;font:inherit;font-size:13px}.sug button:hover{border-color:var(--accent)}
+.typing{display:inline-flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:b 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{transform:translateY(-4px);opacity:.4}}
+.lv{margin:14px 0 4px;font-weight:700;text-transform:capitalize;font-size:14px}
+.er{display:grid;grid-template-columns:150px 1fr 70px 60px;gap:10px;align-items:center;font-size:13px;padding:5px 8px;border-radius:8px}
+.er.best{background:var(--soft);font-weight:600}.trk{height:10px;background:var(--grid);border-radius:9px;overflow:hidden}.trk u{display:block;height:100%;background:var(--accent);border-radius:9px}
+.er.hd{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.skel{height:150px;border-radius:12px;background:linear-gradient(90deg,var(--soft),var(--grid),var(--soft));background-size:200% 100%;animation:s 1.3s infinite;margin-bottom:10px}@keyframes s{to{background-position:-200% 0}}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--code);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;transition:.3s;z-index:30}#toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:6px 20px 30px}
+@media(max-width:640px){header{padding:20px 16px 52px}.er{grid-template-columns:110px 1fr 54px 44px;gap:6px}.top{flex-direction:column}}
+</style></head><body>
+<header><div class="top"><div><h1>⚡ Renewable Asset Fault & Anomaly Detection Copilot</h1>
+<p>Statistical rules + IsolationForest on solar and wind telemetry, explained in plain operator language.</p></div>
+<div class="tools"><span class="pill"><span class="dot" id="dot"></span><span id="st">Connecting…</span></span><button class="ic" id="theme" title="Toggle dark / light" aria-label="Toggle theme">🌙</button></div></div></header>
+<main>
+<div class="card"><div class="kpis" id="kpis"><div class="skel" style="height:70px;grid-column:1/-1"></div></div></div>
+
+<div class="card"><div class="bar"><div><h2>Asset telemetry</h2><p class="sub" style="margin:0">Hover the charts to inspect readings. Red markers are flagged anomalies.</p></div>
+<div class="row"><div class="seg" id="tabs" role="tablist"></div>
+<input type="file" id="upl" accept=".csv" hidden><button class="btn sec" id="upbtn">⬆ Analyse your CSV</button><button class="btn sec" id="reset" hidden>↺ Bundled data</button></div></div>
+<div id="charts"><div class="skel"></div><div class="skel"></div></div></div>
+
+<div class="card"><h2>Detected events</h2><p class="sub">Each event lists why it was flagged, likely causes ranked by playbook match, and what to check next.</p><div id="events"></div></div>
+
+<div class="card"><h2>Ask the copilot</h2><p class="sub">Type a question or pick a suggestion, then press <b>Ask</b> or hit <b>Enter</b>.</p>
+<div class="chat" id="chat"><div class="empty" id="empty">No questions yet. Try one of the suggestions below.</div></div>
+<div class="row"><input type="text" id="q" placeholder="Ask about anomalies, causes or next checks… (try “hi” too)" autocomplete="off">
+<button class="btn" id="ask" disabled>Ask</button><button class="btn sec" id="clr">Clear</button></div>
+<div class="sug"><button data-q="Summarise all high severity anomalies">Summarise high severity</button><button data-q="Why was WTG_07 flagged?">Why was WTG_07 flagged?</button>
+<button data-q="What should I check on wind turbine WTG_07?">Next checks: wind</button><button data-q="What should I check on the solar inverter?">Next checks: solar</button></div></div>
+
+<div class="card"><h2>Model evaluation</h2><p class="sub">Synthetic fault injection, 30 seeded trials per level. Bars show F1 score.</p><div id="evalbox"><div class="skel"></div></div></div>
+</main>
+<footer>Detections are decision support, not diagnoses. Verify on site and follow LOTO/OEM procedures before acting.</footer>
+<div id="tip"></div><div id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S={data:null,upload:null,asset:null};let CH=null;
+async function j(u,o){const r=await fetch(u,o);if(!r.ok){let d='';try{d=(await r.json()).detail}catch(e){}throw new Error(d||r.statusText)}return r.json()}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+const cur=()=>S.upload||S.data;
+const seriesOf=id=>S.upload?S.upload.series[id]:S.data.series_by_asset[id];
+const icon=id=>String(id).toUpperCase().startsWith('SOLAR')?'☀':'🌬';
+
+/* theme */
+function setTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀':'🌙';try{localStorage.setItem('theme',t)}catch(e){}}
+let saved=null;try{saved=localStorage.getItem('theme')}catch(e){}
+setTheme(saved||(matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+$('theme').onclick=()=>{setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');if(S.asset&&cur())drawCharts(S.asset)};
+
+/* KPIs + tabs */
+function kpis(s){const items=[[s.n_assets,'assets monitored',''],[s.n_rows,'readings analysed',''],[s.n_flagged_points,'flagged points','amb'],[s.n_events,'events','amb'],[s.by_severity.high,'high severity','red'],[Number(s.total_energy_shortfall_mwh).toFixed(2)+' MWh','energy shortfall','red']];
+ $('kpis').innerHTML=items.map(([a,b,c])=>`<div class="kpi ${c}"><b>${a}</b><span>${b}</span></div>`).join('')}
+function tabs(assets){$('tabs').innerHTML=assets.map(a=>`<button role="tab" data-a="${esc(a)}" class="${a===S.asset?'on':''}">${icon(a)} ${esc(a)}</button>`).join('')}
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(b)selectAsset(b.dataset.a)};
+function selectAsset(id){S.asset=id;tabs(cur().assets);drawCharts(id);renderEvents(cur().events.filter(e=>e.asset_id===id))}
+
+/* charts */
+function chart(series,key,label,unit,expKey,k){
+ const W=1000,H=170,L=46,R=12,T=14,B=22,n=series.length;
+ const med=(()=>{const a=series.map(d=>d[key]).sort((x,y)=>x-y);return a[Math.floor(a.length/2)]})();
+ const vals=series.flatMap(d=>[d[key],expKey?d[expKey]:null]).filter(v=>v!=null);
+ let lo=Math.min(...vals),hi=Math.max(...vals);if(hi-lo<1e-9)hi=lo+1;const nonneg=Math.min(...vals)>=0,pad=(hi-lo)*.08;lo-=pad;hi+=pad;if(nonneg&&lo<0)lo=0;
+ const X=i=>L+i*(W-L-R)/(n-1),Y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);
+ let s=`<svg class="ch" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="g${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--accent);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--accent);stop-opacity:0"/></linearGradient></defs>`;
+ for(let g=0;g<=3;g++){const v=lo+(hi-lo)*g/3;s+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="tk" x="${L-6}" y="${Y(v)+3}" text-anchor="end">${v.toFixed(v>=10?0:2)}</text>`}
+ let i=0;while(i<n){if(series[i].is_anomaly){let m=i;while(m+1<n&&series[m+1].is_anomaly)m++;s+=`<rect class="band" x="${X(i)-5}" y="${T}" width="${X(m)-X(i)+10}" height="${H-T-B}" rx="4"/>`;i=m+1}else i++}
+ s+=`<path style="fill:url(#g${k})" d="M${X(0)},${H-B} ${series.map((d,i)=>`L${X(i)},${Y(d[key])}`).join(' ')} L${X(n-1)},${H-B} Z"/>`;
+ if(expKey)s+=`<polyline class="ex" points="${series.map((d,i)=>X(i)+','+Y(d[expKey])).join(' ')}"/>`;
+ else s+=`<line class="ex" x1="${L}" x2="${W-R}" y1="${Y(med)}" y2="${Y(med)}"/>`;
+ s+=`<polyline class="ln" points="${series.map((d,i)=>X(i)+','+Y(d[key])).join(' ')}"/>`;
+ series.forEach((d,i)=>{if(d.is_anomaly)s+=`<circle class="pulse" cx="${X(i)}" cy="${Y(d[key])}" r="6"/><circle class="an" cx="${X(i)}" cy="${Y(d[key])}" r="4.5"/>`});
+ for(let d=0;d<n;d+=24)s+=`<text class="tk" x="${X(d)}" y="${H-5}">Day ${d/24+1}</text>`;
+ s+=`<line class="xh" y1="${T}" y2="${H-B}" x1="0" x2="0"/></svg>`;
+ return `<div class="chart"><div class="ch-h"><span>${label} <span class="leg">(${unit})</span></span><span class="leg">— actual &nbsp; ${expKey?'- - expected':'- - median'} &nbsp; <span style="color:var(--hi)">●</span> anomaly</span></div>${s}</div>`}
+function drawCharts(id){const s=seriesOf(id);if(!s||s.length<2){$('charts').innerHTML='<div class="empty">Not enough data for this asset.</div>';return}
+ CH={W:1000,L:46,R:12,n:s.length,s};
+ $('charts').innerHTML=chart(s,'power_mw','Power','MW','expected_mw',0)+chart(s,'vibration_mm_s','Vibration','mm/s',null,1)+chart(s,'temperature_c','Temperature','°C','temp_baseline',2)}
+const tip=$('tip');
+$('charts').addEventListener('mousemove',e=>{const svg=e.target.closest('svg.ch');if(!svg||!CH)return;const r=svg.getBoundingClientRect();
+ let i=Math.round(((e.clientX-r.left)/r.width*CH.W-CH.L)/(CH.W-CH.L-CH.R)*(CH.n-1));i=Math.max(0,Math.min(CH.n-1,i));
+ const px=CH.L+i*(CH.W-CH.L-CH.R)/(CH.n-1);document.querySelectorAll('.xh').forEach(l=>{l.setAttribute('x1',px);l.setAttribute('x2',px);l.style.opacity=1});
+ const d=CH.s[i];tip.innerHTML=`<b>Day ${Math.floor(d.step/24)+1}, ${String(d.hour).padStart(2,'0')}:00</b><br>Power ${d.power_mw} MW (exp ${d.expected_mw})<br>Vibration ${d.vibration_mm_s} mm/s<br>Temp ${d.temperature_c} °C<br>Score ${d.anomaly_score}${d.is_anomaly?` · <b style="color:#fca5a5">${esc(d.severity)}</b>`:''}`;
+ tip.style.left=Math.min(e.clientX+14,innerWidth-250)+'px';tip.style.top=(e.clientY+14)+'px';tip.style.opacity=1});
+$('charts').addEventListener('mouseleave',()=>{tip.style.opacity=0;document.querySelectorAll('.xh').forEach(l=>l.style.opacity=0)});
+
+/* events */
+function evCard(e,idx){const x=e.explanation,li=a=>(a||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+ const chips=[];if(e.rules.includes('HIGH_VIBRATION'))chips.push(`Vibration ${e.peak_vibration.toFixed(2)} mm/s`);
+ if(e.rules.includes('OVER_TEMPERATURE'))chips.push(`Temp +${e.temp_above_normal.toFixed(1)} °C vs normal`);
+ if(e.energy_shortfall_mwh>0)chips.push(`${e.energy_shortfall_mwh.toFixed(2)} MWh lost`);
+ return `<div class="ev ${e.severity}"><div class="ev-h"><span class="badge ${e.severity}">${e.severity.toUpperCase()}</span><b>${icon(e.asset_id)} ${esc(e.asset_id)}</b><span class="leg">· ${esc(x.when)}</span>
+ <div class="score"><small>Anomaly score ${e.peak_score}/100</small><i><u style="width:${Math.min(100,e.peak_score)}%"></u></i></div></div>
+ <div>${chips.map(c=>`<span class="chip w">${esc(c)}</span>`).join('')}<span class="chip">Confidence: ${esc(x.confidence)}</span></div>
+ <p class="sum">${esc(x.summary_llm||x.summary)}</p>
+ <details open><summary>Why it was flagged</summary><div style="margin-top:6px">${x.why_flagged.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div></details>
+ <details open><summary>Likely causes (ranked by playbook match)</summary><ul>${li(x.likely_causes)}</ul></details>
+ <details open><summary>Recommended next checks</summary><ul>${li(x.next_checks)}</ul></details>
+ <div class="safety">⚠ ${esc(x.safety_note)}</div>
+ <div class="foot"><span>Playbooks: ${x.playbooks.map(p=>esc(p.title)+' ('+p.similarity+')').join(' · ')}</span><button class="btn sec" data-copy="${idx}">Copy report</button></div></div>`}
+let SHOWN=[];
+function renderEvents(evs){SHOWN=evs;$('events').innerHTML=evs.length?evs.map(evCard).join(''):'<div class="empty">✅ No anomalies detected for this asset.</div>'}
+$('events').addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const ev=SHOWN[+b.dataset.copy],x=ev.explanation;
+ const t=`${ev.asset_id} - ${x.when} - ${ev.severity.toUpperCase()}\n${x.summary}\n\nLikely causes:\n- ${x.likely_causes.join('\n- ')}\n\nNext checks:\n- ${x.next_checks.join('\n- ')}\n\nSafety: ${x.safety_note}`;
+ try{await navigator.clipboard.writeText(t);toast('Report copied to clipboard')}catch(err){toast('Copy not available in this browser')}});
+
+/* copilot: runs ONLY when Ask is pressed */
+const q=$('q');q.addEventListener('input',()=>{$('ask').disabled=!q.value.trim()});
+q.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&!$('ask').disabled){e.preventDefault();$('ask').click()}});
+document.querySelectorAll('.sug button').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;$('ask').disabled=false;q.focus()});
+function msg(cls,html){const e=$('empty');if(e)e.remove();const d=document.createElement('div');d.className='m '+cls;d.innerHTML=html;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight;return d}
+$('ask').onclick=async()=>{const t=q.value.trim();if(!t)return;q.value='';$('ask').disabled=true;msg('u',esc(t));
+ const b=msg('b','<span class="typing"><i></i><i></i><i></i></span>');
+ try{const r=await j('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+  b.innerHTML=esc(r.answer)+`<details><summary>Reasoning steps</summary><ul>${r.reasoning_steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></details>`+(r.limitations?`<small>${esc(r.limitations)}</small>`:'')+(r.suggestions&&r.suggestions.length?`<div class="sug">${r.suggestions.map(x=>`<button data-q="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:'')}
+ catch(err){b.textContent='Error: '+err.message}
+ $('chat').scrollTop=$('chat').scrollHeight};
+$('chat').addEventListener('click',e=>{const b=e.target.closest('.sug button');if(b){q.value=b.dataset.q;$('ask').disabled=false;q.focus()}});
+$('clr').onclick=()=>{$('chat').innerHTML='<div class="empty" id="empty">No questions yet. Try one of the suggestions below.</div>'};
+
+/* evaluation */
+function renderEval(ev){const b=ev.injection_benchmark;let h='';
+ for(const lv in b){h+=`<div class="lv">${esc(lv)} faults</div><div class="er hd"><span>Method</span><span>F1</span><span>Precision</span><span>Recall</span></div>`;
+  for(const m in b[lv]){const v=b[lv][m];h+=`<div class="er ${m==='ensemble'?'best':''}"><span>${m.replace(/_/g,' ')}</span><span class="trk"><u style="width:${v.f1*100}%"></u></span><span>P ${v.precision}</span><span>R ${v.recall}</span></div>`}}
+ $('evalbox').innerHTML=h+'<p class="sub" style="margin-top:12px">Synthetic faults are easier than real ones, so treat this as a relative comparison, not field accuracy.</p>'}
+
+/* upload */
+$('upbtn').onclick=()=>$('upl').click();
+$('upl').onchange=async e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f);toast('Analysing '+f.name+'…');
+ try{S.upload=await j('/api/analyze_upload',{method:'POST',body:fd});kpis(S.upload.summary);$('reset').hidden=false;selectAsset(S.upload.assets[0]);toast('Analysis complete')}
+ catch(err){toast('Upload failed: '+err.message)}e.target.value=''};
+$('reset').onclick=()=>{S.upload=null;$('reset').hidden=true;kpis(S.data.summary);selectAsset(S.data.assets[0])};
+
+/* boot */
+async function load(){
+ try{await j('/api/health');$('dot').className='dot on';$('st').textContent='API online'}catch(e){$('dot').className='dot off';$('st').textContent='API offline'}
+ try{const d=await j('/api/demo');d.series_by_asset={};
+  await Promise.all(d.assets.map(async a=>{d.series_by_asset[a]=(await j('/api/analyze?asset_id='+encodeURIComponent(a))).series}));
+  S.data=d;kpis(d.summary);selectAsset(d.assets[0])}
+ catch(e){$('events').innerHTML='<div class="empty">Backend not reachable: '+esc(e.message)+'</div>';$('charts').innerHTML=''}
+ try{renderEval(await j('/api/evaluation'))}catch(e){$('evalbox').innerHTML='<div class="empty">Run <code>python -m backend.evaluate</code> to generate results.</div>'}}
+load();
+</script></body></html>

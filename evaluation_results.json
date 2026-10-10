@@ -1,0 +1,119 @@
+{
+  "config": {
+    "z_thresh": 3.5,
+    "scale_floor_frac": 0.03,
+    "vib_floor": 0.1,
+    "temp_floor": 1.5,
+    "if_contamination": 0.03,
+    "if_min_z": 2.0,
+    "n_estimators": 300,
+    "random_state": 42,
+    "min_perf_frac": 0.1,
+    "event_gap": 2
+  },
+  "bundled_data_sanity_check": {
+    "reference_windows": [
+      [
+        "SOLAR_INV_01",
+        67,
+        69
+      ],
+      [
+        "WTG_07",
+        173,
+        174
+      ]
+    ],
+    "detected_events": [
+      [
+        "SOLAR_INV_01",
+        67,
+        69
+      ],
+      [
+        "WTG_07",
+        173,
+        174
+      ]
+    ],
+    "exact_match": true,
+    "flagged_points": 5,
+    "total_points": 240
+  },
+  "injection_benchmark": {
+    "obvious": {
+      "rules_only": {
+        "precision": 1.0,
+        "recall": 0.975,
+        "f1": 0.987,
+        "event_recall": 0.988,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "isolation_forest_only": {
+        "precision": 1.0,
+        "recall": 0.602,
+        "f1": 0.752,
+        "event_recall": 0.808,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "ensemble": {
+        "precision": 1.0,
+        "recall": 0.986,
+        "f1": 0.993,
+        "event_recall": 0.994,
+        "false_alarms_per_100_hours": 0.0
+      }
+    },
+    "moderate": {
+      "rules_only": {
+        "precision": 1.0,
+        "recall": 0.942,
+        "f1": 0.97,
+        "event_recall": 0.946,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "isolation_forest_only": {
+        "precision": 1.0,
+        "recall": 0.594,
+        "f1": 0.745,
+        "event_recall": 0.79,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "ensemble": {
+        "precision": 1.0,
+        "recall": 0.967,
+        "f1": 0.983,
+        "event_recall": 0.988,
+        "false_alarms_per_100_hours": 0.0
+      }
+    },
+    "subtle": {
+      "rules_only": {
+        "precision": 1.0,
+        "recall": 0.68,
+        "f1": 0.809,
+        "event_recall": 0.778,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "isolation_forest_only": {
+        "precision": 1.0,
+        "recall": 0.506,
+        "f1": 0.672,
+        "event_recall": 0.653,
+        "false_alarms_per_100_hours": 0.0
+      },
+      "ensemble": {
+        "precision": 1.0,
+        "recall": 0.743,
+        "f1": 0.853,
+        "event_recall": 0.85,
+        "false_alarms_per_100_hours": 0.0
+      }
+    }
+  },
+  "notes": [
+    "Injection benchmark: 30 random trials per level, 3 faults per asset per trial, 2 assets, seeds 1000-1029.",
+    "Recall counts only observable faults (underperformance at zero-power hours is excluded).",
+    "Synthetic faults are simpler than real ones; treat as a relative comparison and lower bound on difficulty, not a field accuracy claim."
+  ]
+}
