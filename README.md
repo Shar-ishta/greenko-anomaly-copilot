@@ -2,7 +2,7 @@
 
 Detects abnormal behaviour in solar-inverter and wind-turbine telemetry and explains it to operators in plain language: what happened, how bad it is, likely causes, and what to check next.
 
-**Live URL (Railway):** `<ADD YOUR RAILWAY URL HERE after deploying>`
+**Live URL (Railway):** https://web-production-278fd.up.railway.app/
 
 ## Quick start
 ```bash

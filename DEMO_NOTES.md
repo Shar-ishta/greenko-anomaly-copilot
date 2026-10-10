@@ -9,6 +9,6 @@
 | 03_event_card_solar.png | Operator-language explanation: vibration 3.98 mm/s (normal ≈ 1.38), temperature +19 °C, ranked causes, next checks and a safety note. |
 | 04_copilot.png | Copilot answers "Summerize high severity" with playbook-based checks and shows its reasoning steps. |
 | 05_evaluation.png | Synthetic fault-injection results: ensemble F1 0.99 (obvious) to 0.85 (subtle). |
-
+| 06_railway.png | Railway deployment showing "Active" and the live URL. |
 
 **Key message:** the two fault windows in the bundled data are detected with no false alarms. Subtle faults are the main weakness, as documented in the README.
